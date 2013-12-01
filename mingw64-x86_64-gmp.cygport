@@ -2,7 +2,7 @@ CROSS_HOST="x86_64-w64-mingw32"
 inherit cross
 
 NAME="mingw64-x86_64-gmp"
-VERSION=5.0.5
+VERSION=5.1.3
 RELEASE=1
 CATEGORY="Devel"
 SUMMARY="Multiple Precision arithmetic library for Win64 toolchain"
@@ -16,5 +16,45 @@ SRC_DIR="gmp-${VERSION}"
 PATCH_URI="01-libtool22.patch"
 
 CYGCONF_ARGS="--enable-cxx"
-MAKEOPTS+=" infodir= "
+
+src_compile() {
+	cd ${S}
+	cygautoreconf
+
+	# static and shared cannot be built simultaneously
+	mkdir -p ${B}/shared
+	cd ${B}/shared
+	cygconf --enable-cxx --enable-shared --disable-static
+	cygmake
+
+	mkdir -p ${B}/static
+	cd ${B}/static
+	cygconf --enable-cxx --disable-shared --enable-static
+	cygmake
+}
+
+src_install() {
+	cd ${B}/static
+	cyginstall infodir=
+	cd ${B}/shared
+	cyginstall infodir=
+
+	patch ${D}${CROSS_INCLUDEDIR}/gmp.h <<_EOF
+--- a/gmp.h
++++ b/gmp.h
+@@ -57,7 +57,11 @@
+ /* Instantiated by configure. */
+ #if ! defined (__GMP_WITHIN_CONFIGURE)
+ #define _LONG_LONG_LIMB 1
++#ifndef GMP_STATIC_COMPILATION
+ #define __GMP_LIBGMP_DLL  1
++#else
++#define __GMP_LIBGMP_DLL  0
++#endif
+ #endif
+ 
+ 
+_EOF
+}
+
 KEEP_LA_FILES="none"
