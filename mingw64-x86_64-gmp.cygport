@@ -2,7 +2,7 @@ CROSS_HOST="x86_64-w64-mingw32"
 inherit cross
 
 NAME="mingw64-x86_64-gmp"
-VERSION=5.1.3
+VERSION=6.0.0a
 RELEASE=1
 CATEGORY="Devel"
 SUMMARY="Multiple Precision arithmetic library for Win64 toolchain"
@@ -11,9 +11,8 @@ Instead, it contains msvcrt-linked binaries.  It is for use with the
 mingw64-x86_64-gcc cross compiler, and installs into the
 /mingw/x86_64-pc-mingw64-gnu/sys-root/usr/{lib,include} directories."
 HOMEPAGE="http://gmplib.org/"
-SRC_URI="ftp://ftp.gmplib.org/pub/gmp-${VERSION}/gmp-${VERSION}.tar.bz2"
-SRC_DIR="gmp-${VERSION}"
-PATCH_URI="01-libtool22.patch"
+SRC_URI="https://gmplib.org/download/gmp/gmp-${VERSION}.tar.lz"
+SRC_DIR="gmp-${VERSION%[a-z]}"
 
 CYGCONF_ARGS="--enable-cxx"
 
@@ -39,10 +38,10 @@ src_install() {
 	cd ${B}/shared
 	cyginstall infodir=
 
-	patch ${D}${CROSS_INCLUDEDIR}/gmp.h <<_EOF
+	patch --no-backup-if-mismatch ${D}${CROSS_INCLUDEDIR}/gmp.h <<_EOF
 --- a/gmp.h
 +++ b/gmp.h
-@@ -57,7 +57,11 @@
+@@ -60,7 +60,11 @@
  /* Instantiated by configure. */
  #if ! defined (__GMP_WITHIN_CONFIGURE)
  #define _LONG_LONG_LIMB 1
