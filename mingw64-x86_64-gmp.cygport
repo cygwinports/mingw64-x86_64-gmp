@@ -3,7 +3,7 @@ inherit cross
 
 NAME="mingw64-x86_64-gmp"
 VERSION=6.0.0a
-RELEASE=1
+RELEASE=2
 CATEGORY="Devel"
 SUMMARY="Multiple Precision arithmetic library for Win64 toolchain"
 DESCRIPTION="This package does NOT contain cygwin binaries.
