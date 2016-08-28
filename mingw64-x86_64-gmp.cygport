@@ -2,8 +2,8 @@ CROSS_HOST="x86_64-w64-mingw32"
 inherit cross
 
 NAME="mingw64-x86_64-gmp"
-VERSION=6.0.0a
-RELEASE=2
+VERSION=6.1.1
+RELEASE=1
 CATEGORY="Devel"
 SUMMARY="Multiple Precision arithmetic library for Win64 toolchain"
 DESCRIPTION="This package does NOT contain cygwin binaries.
@@ -14,7 +14,7 @@ HOMEPAGE="http://gmplib.org/"
 SRC_URI="https://gmplib.org/download/gmp/gmp-${VERSION}.tar.lz"
 SRC_DIR="gmp-${VERSION%[a-z]}"
 
-CYGCONF_ARGS="--enable-cxx"
+CYGCONF_ARGS="--enable-cxx --enable-fat"
 
 src_compile() {
 	cd ${S}
@@ -30,6 +30,11 @@ src_compile() {
 	cd ${B}/static
 	cygconf --enable-cxx --disable-shared --enable-static
 	cygmake
+}
+
+src_test() {
+	cd ${B}/shared
+	cygtest
 }
 
 src_install() {
